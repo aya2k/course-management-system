@@ -17,7 +17,7 @@ class LessonController extends Controller
      */
     public function index()
     {
-        $lessons=Lesson::where('is_avaliable',true)->get();
+        $lessons = Lesson::where('is_avaliable', true)->get();
         return response()->json(['lessons' => LessonResource::collection($lessons)]);
     }
 
@@ -25,29 +25,29 @@ class LessonController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(CreateLessonRequest $request)
-{
-    $data = $request->validated();
+    {
+        $data = $request->validated();
 
-    $lesson = new Lesson();
+        $lesson = new Lesson();
 
-    $lesson->course_id = $data['course_id'];   
-    $lesson->name = $data['name'];
-    $lesson->desc = $data['desc'];
-    $lesson->duration = $data['duration'];
-    $lesson->is_avaliable = $data['is_avaliable'] ?? true;
+        $lesson->course_id = $data['course_id'];
+        $lesson->name = $data['name'];
+        $lesson->desc = $data['desc'];
+        $lesson->duration = $data['duration'];
+        $lesson->is_avaliable = $data['is_avaliable'] ?? true;
 
-    if ($request->hasFile('image')) {
-        $path = $request->file('image')->store('uploads', 'public');
-        $lesson->image = $path;
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('uploads', 'public');
+            $lesson->image = $path;
+        }
+
+        $lesson->save();
+
+        return response()->json([
+            'message' => 'Lesson added successfully',
+            'lesson' => $lesson
+        ], 201);
     }
-
-    $lesson->save();
-
-    return response()->json([
-        'message' => 'Lesson added successfully',
-        'lesson' => $lesson
-    ], 201);
-}
 
 
     /**
@@ -55,12 +55,12 @@ class LessonController extends Controller
      */
     public function show(string $id)
     {
-        $lesson=Lesson::find($id);
-         if ($lesson){
-            return response()->json($lesson ,'200');
-         }else {
+        $lesson = Lesson::find($id);
+        if ($lesson) {
+            return response()->json($lesson, '200');
+        } else {
             return 'the lesson not found';
-         }
+        }
     }
 
     /**
@@ -69,27 +69,27 @@ class LessonController extends Controller
     public function update(UpdateLessonRequest $request, string $id)
     {
         $data = $request->validated();
-        
+
         $lesson = Lesson::findOrFail($id);
         $lesson->name = $data['name'];
         $lesson->desc = $data['desc'];
         $lesson->duration = $data['duration'];
         $lesson->video_url = $data['video_url'];
-        $lesson->is_avaliable = $data['is_avaliable'] ??true;
-        
-         
+        $lesson->is_avaliable = $data['is_avaliable'] ?? true;
+
+
         if ($request->hasFile('image')) {
-            // Delete old file if it exists
+
             if ($lesson->image) {
                 Storage::disk('public')->delete($lesson->image);
             }
 
-            // Store new file
+
             $path = $request->file('image')->store('uploads', 'public');
             $lesson->image = $path;
         }
 
-        // Save changes
+
         $lesson->save();
 
         return response()->json([
@@ -99,19 +99,19 @@ class LessonController extends Controller
     }
 
 
-   
+
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(string $id)
     {
-         $lesson=Lesson::find($id);
-       if ($lesson){
-        $lesson->delete();
-        return response()->json('the lesson is deleted' ,200);
-       }else {
-        return response()->json('the lesson is not found');
-       }
+        $lesson = Lesson::find($id);
+        if ($lesson) {
+            $lesson->delete();
+            return response()->json('the lesson is deleted', 200);
+        } else {
+            return response()->json('the lesson is not found');
+        }
     }
 }

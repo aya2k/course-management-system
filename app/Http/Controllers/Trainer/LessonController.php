@@ -24,7 +24,7 @@ class LessonController extends Controller
         $this->authorizeTrainer($course);
 
         $data = $request->validated();
-           
+
         $data['course_id'] = $course->id;
 
         Lesson::create($data);
@@ -40,13 +40,15 @@ class LessonController extends Controller
     }
 
     public function destroy(Course $course, Lesson $lesson)
-{
-    
-    
+    {
 
-    $lesson->delete();
-    return redirect()->back()->with('success', 'Lesson deleted.');
+        if ($lesson->course_id !== $course->id) {
+            abort(403, 'This lesson does not belong to the specified course.');
+        }
+
+
+        $lesson->delete();
+
+        return redirect()->back()->with('success', 'Lesson deleted.');
+    }
 }
-
-}
-

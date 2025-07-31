@@ -76,7 +76,7 @@ class CourseController extends Controller
         $course->desc = $data['desc'];
         $course->duration = $data['duration'];
         $course->price = $data['price'];
-        $course->is_avaliable = $data['is_avaliable'] ??true;
+        $course->is_avaliable = $data['is_avaliable'] ?? true;
 
 
         if ($request->hasFile('image')) {
